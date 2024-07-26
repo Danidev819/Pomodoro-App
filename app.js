@@ -39,10 +39,25 @@ const appTimer = () => {
 			}
 		};
 		myInterval = setInterval(updateSeconds, 1000);
-	} else if (state === "paused") {
-		state = "on";
-		let totalSeconds = sessionAmount * 60;
+	} else {
+		alert("Timer is already running");
+	}
+};
 
+const resetTimer = () => {
+	clearInterval(myInterval);
+	document.querySelector(".minutes").textContent = "25";
+	document.querySelector(".seconds").textContent = "00";
+	state = "off";
+};
+
+const resumeTimer = () => {
+	if (state === "paused") {
+		// Tiene que seguir contando desde donde se quedo con lo cual no se usa appTimer()
+		state = "on";
+		let totalSeconds =
+			Number.parseInt(document.querySelector(".minutes").textContent) * 60 +
+			Number.parseInt(document.querySelector(".seconds").textContent);
 		const updateSeconds = () => {
 			const minuteDiv = document.querySelector(".minutes");
 			const secondDiv = document.querySelector(".seconds");
@@ -65,16 +80,8 @@ const appTimer = () => {
 			}
 		};
 		myInterval = setInterval(updateSeconds, 1000);
-	} else {
-		return;
+		pauseBtn.textContent = "Pause";
 	}
-};
-
-const resetTimer = () => {
-	clearInterval(myInterval);
-	document.querySelector(".minutes").textContent = "25";
-	document.querySelector(".seconds").textContent = "00";
-	state = "off";
 };
 
 const pauseTimer = () => {
@@ -83,7 +90,7 @@ const pauseTimer = () => {
 		state = "paused";
 		pauseBtn.textContent = "Resume";
 	} else if (state === "paused") {
-		appTimer();
+		resumeTimer();
 		pauseBtn.textContent = "Pause";
 	}
 };
