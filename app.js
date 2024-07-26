@@ -4,13 +4,43 @@ const resetBtn = document.querySelector(".btn-reset");
 const pauseBtn = document.querySelector(".btn-pause");
 const session = document.querySelector(".minutes");
 let myInterval;
-let state = true;
+let state = "off";
+let sessionAmount = Number.parseInt(session.textContent); // Almacenar el valor inicial de sessionAmount
 
 const appTimer = () => {
-	const sessionAmount = Number.parseInt(session.textContent);
+	if (state === "off" || state === "paused") {
+		// Actualizar sessionAmount solo si el estado es "off" o "paused"
+		sessionAmount = Number.parseInt(session.textContent);
+	}
 
-	if (state) {
-		state = false;
+	if (state === "off") {
+		state = "on";
+		let totalSeconds = sessionAmount * 60;
+
+		const updateSeconds = () => {
+			const minuteDiv = document.querySelector(".minutes");
+			const secondDiv = document.querySelector(".seconds");
+
+			totalSeconds--;
+
+			let minutesLeft = Math.floor(totalSeconds / 60);
+			let secondsLeft = totalSeconds % 60;
+
+			if (secondsLeft < 10) {
+				secondDiv.textContent = "0" + secondsLeft;
+			} else {
+				secondDiv.textContent = secondsLeft;
+			}
+			minuteDiv.textContent = `${minutesLeft}`;
+
+			if (minutesLeft === 0 && secondsLeft === 0) {
+				bells.play();
+				clearInterval(myInterval);
+			}
+		};
+		myInterval = setInterval(updateSeconds, 1000);
+	} else if (state === "paused") {
+		state = "on";
 		let totalSeconds = sessionAmount * 60;
 
 		const updateSeconds = () => {
@@ -36,7 +66,7 @@ const appTimer = () => {
 		};
 		myInterval = setInterval(updateSeconds, 1000);
 	} else {
-		alert("Session has already started.");
+		return;
 	}
 };
 
@@ -44,12 +74,18 @@ const resetTimer = () => {
 	clearInterval(myInterval);
 	document.querySelector(".minutes").textContent = "25";
 	document.querySelector(".seconds").textContent = "00";
-	state = true;
+	state = "off";
 };
 
 const pauseTimer = () => {
-	clearInterval(myInterval);
-	state = true;
+	if (state === "on") {
+		clearInterval(myInterval);
+		state = "paused";
+		pauseBtn.textContent = "Resume";
+	} else if (state === "paused") {
+		appTimer();
+		pauseBtn.textContent = "Pause";
+	}
 };
 
 startBtn.addEventListener("click", appTimer);
