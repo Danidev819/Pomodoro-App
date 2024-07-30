@@ -49,6 +49,7 @@ const resetTimer = () => {
 	document.querySelector(".minutes").textContent = "25";
 	document.querySelector(".seconds").textContent = "00";
 	state = "off";
+	pauseBtn.textContent = "Pause"; // Reset the text content of pauseBtn to "Pause"
 };
 
 const resumeTimer = () => {
